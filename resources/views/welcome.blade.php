@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<!-- 
+<!--
 Template Name: Tunein
 Version: 1.0.0
-Author:Webstrot 
+Author:Webstrot
 {{ asset('assets_admin') }}/
 -->
 <!--[if !IE]><!-->
@@ -337,10 +337,7 @@ Author:Webstrot
                 <div id='cssmenu'>
                     <a href="index.html"><img src="{{ asset('assets') }}/images/logo3.png" alt="logo"></a>
                     <ul class="sidebb">
-                        <li class='has-sub'><a href='#'><i class="flaticon-home"></i>Beranda</a>
-                        </li>
-
-
+                        <li class='has-sub'><a href='#'><i class="flaticon-home"></i>Beranda</a></li>
                         <li><a href='#'><i class="flaticon-internet"></i>CS</a></li>
                         <li><a href='#'><i class="flaticon-trash"></i>Laporan error</a></li>
                     </ul>
@@ -555,14 +552,14 @@ Author:Webstrot
                                                     </div>
                                                     <div class="card-body msg_card_body" id="chat-box">
                                                         {{-- <div class="d-flex justify-content-end mb-4" id="my-user-msg">
-                                                            
+
                                                         </div> --}}
                                                     </div>
                                                     <div class="card-footer">
-                                                        @if (Auth::check())
+                                                        {{-- @if (Auth::check()) --}}
                                                         <div class="input-group">
                                                             <div class="input-group-append"><span class="input-group-text attach_btn"><i class="fas fa-paperclip"></i></span></div>
-                                                            <input type="hidden" class="form-control" id="user_id" name="user_id" value="{{ Auth::user()->id }}">
+                                                            <input type="hidden" class="form-control" id="user_id" name="user_id" value="1">
                                                             <textarea name="message" id="message" class="form-control type_msg" placeholder="Type your message..."></textarea>
                                                             <div class="input-group-append">
                                                                 <span class="input-group-text send_btn">
@@ -571,7 +568,7 @@ Author:Webstrot
                                                             </div>
                                                             <br>
                                                         </div>
-                                                        @endif
+                                                        {{-- @endif --}}
                                                         <br>
                                                     </div>
                                                 </div>
@@ -1048,8 +1045,7 @@ Author:Webstrot
             $('#action_menu_btn').click(function () {
                 $('.action_menu').toggle();
             });
-
-            setInterval(loadMessage, 100);
+            setInterval(loadMessage, 1000);
         });
 
         $('#btn-send-comment').on('click', function(){
@@ -1082,35 +1078,36 @@ Author:Webstrot
                     if (data.length !== 0) {
                         data.forEach(msg => {
                             let msgDiv = '';
-                            if (msg.user_id === '{{ Auth::user()->id }}') {
+                            if (msg.user_id == document.getElementById('user_id').value) {
                                 msgDiv = document.createElement('div')
+                                msgDiv.classList.add('d-flex', 'justify-content-end', 'mb-4')
                                 msgDiv.innerHTML = `
-                                <div class="d-flex justify-content-end mb-4" id="other-user-msg">
-                                    &nbsp; &nbsp;
-                                    <div class="img_cont_msg">
-                                        <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg"
-                                            class="rounded-circle user_img_msg">
-                                    </div>
-                                    <div class="msg_cotainer">
-                                        Hi, how are you samim?
-                                        <span class="msg_time">8:40 AM, Today</span>
-                                    </div>
+                                &nbsp; &nbsp;
+                                <div class="img_cont_msg">
+                                    <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg"
+                                        class="rounded-circle user_img_msg">
+                                </div>
+                                <div class="msg_cotainer mr-2">
+                                    ${msg.chat}
+                                    <span class="msg_time">${formatDateTime(msg.created_at)}</span>
                                 </div>`
+                                chatBox.appendChild(msgDiv)
                             }else{
                                 const msgDiv = document.createElement('div')
+                                msgDiv.classList.add('d-flex', 'justify-content-start', 'mb-4')
                                 msgDiv.innerHTML = `
-                                <div class="d-flex justify-content-start mb-4" id="my-user-msg">
-                                    <div class="msg_cotainer_send">
-                                        Hi, how are you samim?
-                                        <span class="msg_time_send">8:55 AM, Today</span>
-                                    </div>
-                                    <div class="img_cont_msg">
-                                        <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg"
-                                            class="rounded-circle user_img_msg">
-                                    </div>
-                                </div>`
+                                <div class="msg_cotainer_send ml-2">
+                                    ${msg.chat}
+                                    <span class="msg_time_send">${formatDateTime(msg.created_at)}</span>
+                                </div>
+                                <div class="img_cont_msg">
+                                    <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg"
+                                        class="rounded-circle user_img_msg">
+                                </div>
+                                &nbsp; &nbsp;`
+                                chatBox.appendChild(msgDiv)
                             }
-                            chatBox.appendChild(msgDiv)
+
                         })
                     }
                 },
@@ -1118,6 +1115,28 @@ Author:Webstrot
                     console.log('Error:', data);
                 }
             })
+        }
+
+        setInterval(loadMessage, 1000);
+
+        function formatDateTime(dateTimeString) {
+            const date = new Date(dateTimeString);
+            const now = new Date();
+
+            // Format time
+            let hours = date.getHours();
+            const minutes = date.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+            const timeString = hours + ':' + formattedMinutes + ' ' + ampm;
+
+            // Check if the date is today
+            const isToday = date.toDateString() === now.toDateString();
+            const dayString = isToday ? 'Today' : date.toLocaleDateString();
+
+            return timeString + ', ' + dayString;
         }
     </script>
 

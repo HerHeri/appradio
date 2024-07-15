@@ -17,8 +17,13 @@ class LandingpageController extends Controller
         try {
             $chat = new Chat();
             $chat->user_id = $request->user_id;
-            $chat->message = $request->message;
+            $chat->chat = $request->message;
             $chat->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => "Data berhasil disimpan"
+            ]);
             Log::info(['success']);
         } catch (\Throwable $th) {
             Log::error($th->getMessage());
